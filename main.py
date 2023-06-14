@@ -44,6 +44,8 @@ lose = cv2.imread("images/lose.jpg")
 lose = cv2.resize(lose, (1080, 1080))
 
 # api = dobot.dobot_connect()
+
+
 # pygame sound 기초 설정, 오디오 객체 생성
 # pygame.mixer.init()
 # s_game = pygame.mixer.Sound("sound/rsp_start.wav")
@@ -191,14 +193,17 @@ while cap.isOpened():
             # st_result = 주먹이 일정 배열안에 들어와 있으면 시작
             if detect_start:
                 st_result.append(user)
-            mp_drawing.draw_landmarks(frame, res, mp_hands.HAND_CONNECTIONS)
+
+            # 인식된 손가락 그리기
+            # 보고싶으면 주석 삭제
+            # mp_drawing.draw_landmarks(frame[300:900, 240:840], res, mp_hands.HAND_CONNECTIONS)
 
 
         # start 인식 될때 게임시작
         if start:
             rsp_count += 1
             # 음성대기시간 반복문 속도로 카운트하여 만듬
-            # 하드코딩(반목문이 돌아가는 시간을 계산하여 프레임이 끊기지않도록 보여진다)
+            # 하드코딩(반목문이 돌아가는 시간을 계산하여 프레임이 끊기지않도록 보여짐)
             # 컴퓨터 사양마다 값이 다름
             if rsp_count > 25:
                 rsp_start = True
@@ -229,11 +234,15 @@ while cap.isOpened():
                         if w_result[0][0] == '사람':
                             print("user")
                             # r_win.play()
-                            # frame[0:1080, 420:1500] = win
 
                             # time.sleep(10)
                             time.sleep(0.5)
                             win_image = True
+
+                            # 승리시 dobot 동작
+                            # lastIndex = dobot.dobot_control(api)
+                            # dobot.remove_alram(api)
+                            # count += 1
 
                         elif w_result[0][0] == '무승부':
                             # r_draw.play()
@@ -263,14 +272,18 @@ while cap.isOpened():
             st_result = Counter(st_result).most_common(n=1)
             # ok 손동작이 일정값이 입력되면 게임시작
             if st_result[0][0] == "ok" and st_result[0][1] > 22:
-            # if st_result[0][0] == "바위" and st_result[0][1] > 25:
-            #     s_game.play()
                 time.sleep(3.5)
                 detect_start = False
                 start = True
                 # rsp.play()
                 print(start)
             st_result = []
+
+    # dobot 초기화
+    # if count > 3:
+    #     dobot.set_home(api)
+    #     dobot.remove_alram(api)
+    #     count = 0
 
     cv2.imshow('Game', frame)
 
@@ -281,5 +294,6 @@ while cap.isOpened():
     if key == ord('q'):
         break
 
+# dobot.dobot_disconnection(api)
 cap.release()
 cv2.destroyAllWindows()
